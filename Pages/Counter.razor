@@ -1,0 +1,221 @@
+﻿@using System.IO
+@using System.Linq
+
+
+@page "/counter"
+
+<h1>Flight Finder</h1>
+
+
+
+
+<div class="flight-finder">
+    <div class="input-container">
+        <div class="input-group">
+            <label for="from">From:</label>
+            <input type="text" id="from" @bind="fromLocation" placeholder="Any" />
+        </div>
+
+        <div class="input-group">
+            <label for="to">To:</label>
+            <input type="text" id="to" @bind="toLocation" placeholder="Any" />
+        </div>
+
+        <div class="input-group">
+            <label for="day">Day:</label>
+            <input type="text" id="day" @bind="day" placeholder="Any" />
+        </div>
+    </div>
+
+    <button @onclick="SearchFlights">Find Flights</button>
+
+
+    <div class="flight-results">
+        @if (flights == null)
+        {
+            <p><em>Loading...</em></p>
+        }
+        else
+        {
+            <div class="flight-info">
+                <label>Flight code:</label>
+                <input type="text" value="@selectedFlight?.Code" readonly />
+
+                <label>Airline:</label>
+                <input type="text" value="@selectedFlight?.Airline" readonly />
+
+                <label>Day:</label>
+                <input type="text" value="@selectedFlight?.Day" readonly />
+
+                <label>Time:</label>
+                <input type="text" value="@selectedFlight?.Time" readonly />
+
+                <label>Cost:</label>
+                <input type="text" value="@selectedFlight?.Cost" readonly />
+
+                <label>Name:</label>
+                <input type="text" />
+
+                <label>Citizenship:</label>
+                <input type="text" />
+
+                <button1>Reserve</button1>
+            </div>
+
+            <div class="flight-list">
+                @foreach (var flight in flights)
+                {
+                   
+                }
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    /* Global styles to reset some browser defaults */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif; /* You can choose any preferred font-family */
+    }
+
+    /* Container for all elements */
+    .flight-finder {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px; /* Gap between child elements */
+        width: 80%; /* Adjust this as per your requirement */
+        margin: 0 auto;
+    }
+
+    /* Styling for the button */
+    button {
+        background-color: blue;
+        color: white;
+        border: none;
+        padding: 2.5px 90px; /* Increased padding to make the button larger */
+        font-size: 16px;
+        cursor: pointer;
+        transition: 0.3s;
+        border-radius: 5px;
+        margin-left: 140%;
+        display: block;
+        margin-top: -70px;
+        
+    }
+
+        button:hover {
+            background-color: darkblue;
+        }
+
+    /* Styling for input fields and their container */
+    .input-container {
+        display: flex;
+        gap: 20px;
+    }
+
+    .input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    input[type="text"] {
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+
+    /* Styling for the flight-results container */
+    .flight-results {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+
+
+  
+
+</style>
+
+@code {
+    private Flight[] flights;
+    private Flight selectedFlight;
+    private bool searchPerformed = false;
+    private List<Flight> matchingFlights = new List<Flight>();
+    string fromLocation;
+    string toLocation;
+    string day;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadFlightsFromFile();
+    }
+
+    private async Task LoadFlightsFromFile()
+    {
+        var path = @"C:\Users\jasmi\source\repos\FlightApp\wwwroot\flights.csv"; ; // Replace with the correct path to your CSV
+        var lines = await File.ReadAllLinesAsync(path);
+
+        var flightList = new List<Flight>();
+        foreach (var line in lines.Skip(1)) // Assuming the first line is a header
+        {
+            var columns = line.Split(',');
+
+            var flight = new Flight
+                {
+                    Code = columns[0],
+                    Airline = columns[1],
+                    From = columns[2],
+                    To = columns[3],
+                    Day = columns[4],
+                    Time = columns[5],
+                    Duration = int.Parse(columns[6]),
+                    Cost = decimal.Parse(columns[7])
+                };
+
+            flightList.Add(flight);
+        }
+
+        flights = flightList.ToArray();
+    }
+
+    private void FindFlights()
+    {
+        // Implement the logic to search for flights based on the user's input.
+        // Set the searchPerformed flag to true
+        searchPerformed = true;
+
+        // Populate the matchingFlights list based on your search criteria
+        
+    }
+
+    void SearchFlights()
+    {
+        // Implement logic here to filter or search for flights based on input values.
+    }
+
+   
+
+    private class Flight
+    {
+        public string Code { get; set; }
+        public string Airline { get; set; }
+        public string From { get; set; } // Origin
+        public string To { get; set; }   // Destination
+        public string Day { get; set; }
+        public string Time { get; set; }
+        public int Duration { get; set; } // Assuming this is in minutes
+        public decimal Cost { get; set; }
+    }
+
+
+
+
+}
